@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_custom_inherit_form" model="ir.ui.view">
+        <field name="name">res.partner.custom.inherit.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <field name="website" position="after">
+                <field name="survey_id" />
+            </field>
+
+            <xpath expr="//form//sheet/div[@name='button_box']" position="inside">
+                <button name="action_view_survey" string="Start survey" type="object" class="oe_stat_button" icon="fa-play" />
+                <button name="action_view_print_survey" string="Print survey" type="object" class="oe_stat_button" icon="fa-print" />
+                <button name="action_view_send_survey" string="Share and invite by email" type="object" class="oe_stat_button" icon="fa-share" />
+                <button name="action_view_result_survey" string="View results" type="object" class="oe_stat_button" icon="fa-eye" />
+            </xpath>
+
+            <xpath expr="//notebook//page[@name='sales_purchases']" position="after">
+                <page string="Survey Answer">
+                    <field name="survey_user_input_ids" string="Survey Answer">
+                        <list>
+                            <field name="survey_id" />
+                            <field name="create_date" />
+                            <field name="deadline" />
+                            <field name="type" />
+                            <field name="state" />
+                            <button name="survey_user_input" string="View" type="object" class="oe_highlight" />
+                            <button name="survey_view_answers" string="Print These Answers" type="object" class="oe_highlight" />
+                            <button name="survey_resume_answer" invisible="state == 'done'" string="Resume Survey" type="object" class="oe_highlight" />
+                        </list>
+                        <form string="Survey Answer">
+                            <group>
+                                <group>
+                                    <field name="survey_id" />
+                                    <field name="create_date" />
+                                </group>
+                                <group>
+                                    <field name="deadline" />
+                                    <field name="state" />
+                                </group>
+                            </group>
+                        </form>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
