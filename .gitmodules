@@ -1,0 +1,3 @@
+[submodule "INTOUCH-infra/INTOUCHGROUP"]
+	path = INTOUCH-infra/INTOUCHGROUP
+	url = git@github.com:INTOUCH-infra/INTOUCHGROUP.git
