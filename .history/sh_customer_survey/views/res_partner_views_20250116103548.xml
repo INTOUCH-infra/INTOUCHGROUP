@@ -10,7 +10,7 @@
             </field>
 
             <xpath expr="//form//sheet/div[@name='button_box']" position="inside">
-                <button name="action_view_survey" string="Start survey" type="object" class="oe_stat_button" icon="fa-play" target="new" />
+                <button name="action_view_survey" string="Start survey" type="object" class="oe_stat_button" icon="fa-play" />
                 <button name="action_view_print_survey" string="Print survey" type="object" class="oe_stat_button" icon="fa-print" />
                 <button name="action_view_send_survey" string="Share and invite by email" type="object" class="oe_stat_button" icon="fa-share" />
                 <button name="action_view_result_survey" string="View results" type="object" class="oe_stat_button" icon="fa-eye" />
