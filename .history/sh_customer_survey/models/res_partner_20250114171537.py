@@ -32,7 +32,7 @@ class Partner(models.Model):
         return {
             'type': 'ir.actions.act_url',
             'name': "Start Survey",
-            'target': 'new',
+            'target': 'self',
             'url': url,
         }
 
