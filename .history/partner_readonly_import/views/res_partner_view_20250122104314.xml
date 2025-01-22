@@ -1,20 +1,12 @@
 <data>
-  <!-- Remplacement des labels dans le groupe -->
-  <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/label[3]" position="replace">
-    <label for="x_studio_last_name" string="Last Name"/>
-  </xpath>
-  <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/label[2]" position="replace">
-    <label for="x_studio_first_name" string="First Name"/>
-  </xpath>
-  <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/label[1]" position="replace">
-    <label for="phone" string="Phone"/>
-  </xpath>
-
-  <!-- Ajout des champs avant "address_name" -->
+  <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/label[3]" position="replace"/>
+  <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/label[2]" position="replace"/>
+  <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/label[1]" position="replace"/>
   <xpath expr="//span[@name='address_name']" position="before">
     <field name="x_studio_last_name" position="attributes">
         <attribute name="attrs">{'readonly': [('x_is_imported', '=', True)]}</attribute>
     </field>
+
     <field name="x_studio_first_name" position="attributes">
         <attribute name="attrs">{'readonly': [('x_is_imported', '=', True)]}</attribute>
     </field>
@@ -35,8 +27,6 @@
     <field name="x_studio_solutions" options="{&quot;create_name_field&quot;:&quot;x_name&quot;,&quot;no_open&quot;:true,&quot;no_create&quot;:true}" string="Service or product"/>
     <field name="x_studio_creation_date_activation_date"/>
   </xpath>
-
-  <!-- Rendre invisible certains champs dans le formulaire -->
   <xpath expr="//form[1]/sheet[1]/group[1]/group[1]/span[@name='address_name']/field[@name='type']" position="attributes">
     <attribute name="invisible">True</attribute>
   </xpath>
@@ -61,15 +51,11 @@
   <xpath expr="//field[@name='vat']" position="attributes">
     <attribute name="invisible">True</attribute>
   </xpath>
-
-  <!-- Déplacement de certains champs -->
   <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='function']" position="before">
     <field name="x_studio_client_status" string="Client Status"/>
     <field name="x_studio_survey_status" string="Survey Status"/>
     <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='survey_id']" position="move"/>
   </xpath>
-
-  <!-- Masquer certains champs -->
   <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='function']" position="attributes">
     <attribute name="invisible">True</attribute>
   </xpath>
@@ -90,8 +76,6 @@
   <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[3]/field[@name='email']" position="attributes">
     <attribute name="invisible">True</attribute>
   </xpath>
-
-  <!-- Ajouter des champs supplémentaires -->
   <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/div[3]" position="after">
     <field name="x_studio_last_transaction_amount"/>
     <field name="x_studio_last_transaction_date"/>
@@ -99,21 +83,15 @@
     <field name="x_studio_nb_days_inactivity"/>
     <field name="x_studio_number_of_transactions"/>
   </xpath>
-
-  <!-- Rendre certains champs invisibles -->
   <xpath expr="//field[@name='website']" position="attributes">
     <attribute name="invisible">True</attribute>
   </xpath>
   <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='title']" position="attributes">
     <attribute name="invisible">True</attribute>
   </xpath>
-
-  <!-- Ajouter un champ après un autre champ -->
   <xpath expr="//field[@name='user_id']" position="after">
     <field name="x_studio_currency_id"/>
   </xpath>
-
-  <!-- Déplacer des champs -->
   <xpath expr="//field[@name='company_registry']" position="before">
     <xpath expr="//form[1]/sheet[1]/group[1]/group[2]/field[@name='lang']" position="move"/>
   </xpath>
