@@ -5,7 +5,7 @@ class ContactDataCorrection(models.Model):
 
     x_correction_done = fields.Boolean(string='Correction effectuée', default=False)
 
-    @api.model
+    @api.multi
     def correct_contact_data(self):
         """
         Cette méthode corrige les contacts où le prénom et le nom sont inversés.
@@ -20,3 +20,11 @@ class ContactDataCorrection(models.Model):
                     'last_name': contact.first_name,
                     'x_correction_done': True,
                 })
+
+    @api.multi
+    def set_contacts_read_only(self):
+        """
+        Cette méthode rend les contacts en lecture seule.
+        """
+        for contact in self:
+            contact.write({'x_correction_done': True})
