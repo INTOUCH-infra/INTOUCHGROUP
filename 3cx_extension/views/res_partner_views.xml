@@ -4,23 +4,17 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="base.view_partner_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//page[@name='internal_notes']" position="after">
-                <page name="call_logs" string="Call Logs">
-                    <group>
-                        <field name="call_log_ids" nolabel="1">
-                            <tree>
-                                <field name="date"/>
-                                <field name="name"/>
-                                <field name="ttype"/>
-                                <field name="agentname"/>
-                                <field name="agent"/>
-                                <field name="duration"/>
-                                <field name="details"/>
-                            </tree>
-                        </field>
-                    </group>
-                </page>
-            </xpath>
+            <sheet position="inside">
+                <group>
+                    <field name="call_log_ids">
+                        <tree>
+                            <field name="call_date"/>
+                            <field name="call_duration"/>
+                            <field name="call_notes"/>
+                        </tree>
+                    </field>
+                </group>
+            </sheet>
         </field>
     </record>
 </odoo>

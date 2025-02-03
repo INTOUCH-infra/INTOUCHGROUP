@@ -1,8 +1,9 @@
 {
-    'name': '3CX Call Log Extension',
+    'name': '3CX Extension',
     'version': '1.0',
-    'summary': 'Extend nalios_3cx without modifying the base module',
-    'depends': ['nalios_3cx_full'],
+    'category': 'Custom',
+    'summary': 'Extension for 3CX integration',
+    'depends': ['base', 'nalios_3cx_full'],  # Ajoute 'nalios_3cx' s'il est requis
     'data': [
         'views/res_partner_views.xml',
     ],
