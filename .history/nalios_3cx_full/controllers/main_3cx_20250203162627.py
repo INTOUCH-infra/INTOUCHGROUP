@@ -91,7 +91,7 @@ class Main3CX(http.Controller):
 
     def _get_livechat_data(self, data):
         msg = "Sujet: %s<br/>" % data.get('subject', '')
-        msg += "Date: %s<br/>" % self.format_date_for_display(data.get('date'))
+        msg += "Date: %s<br/>" % data.get('date', '')
         msg += "Durée: %s<br/>" % data.get('duration', '')
         msg += "Nom de l'agent: %s<br/>" % data.get('agentname', '')
         msg += "Téléphone de l'agent: %s<br/>" % data.get('agent', '')        
@@ -100,7 +100,7 @@ class Main3CX(http.Controller):
 
     def _get_message_data(self, data):
         msg = "Sujet: %s<br/>" % data.get('subject', '')
-        msg += "Date: %s<br/>" % self.format_date_for_display(data.get('date'))
+        msg += "Date: %s<br/>" % data.get('date')
         msg += "Type d'appel: %s<br/>" % data.get('type', '')
         msg += "Entité: %s<br/>" % data.get('entitytype', '')
         msg += "Nom de l'agent: %s<br/>" % data.get('agentname', '')
