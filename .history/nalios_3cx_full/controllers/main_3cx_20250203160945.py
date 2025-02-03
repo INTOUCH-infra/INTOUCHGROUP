@@ -1,7 +1,8 @@
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
 
 import base64
 import json
+import re
 import logging
 import phonenumbers
 from datetime import datetime
@@ -12,8 +13,9 @@ from odoo.http import request, Response
 
 _logger = logging.getLogger(__name__)
 
-class Main3CX(http.Controller):
 
+class Main3CX(http.Controller):
+    
     def _is_3cx_authenticated(self):
         """Vérifie l'en-tête Authorization pour le token 3CX."""
         try:
@@ -58,15 +60,12 @@ class Main3CX(http.Controller):
 
     def _parse_date(self, date_string):
         """Parse et convertit la chaîne de date en objet datetime."""
-        _logger.info(f"Essai de parsing de la date: {date_string}")
-        date_formats = ["%d-%m-%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%m/%d/%Y %H:%M:%S"]
-        for fmt in date_formats:
-            try:
-                return datetime.strptime(date_string, fmt)
-            except ValueError:
-                continue
-        _logger.info(f"Format de date invalide pour {date_string}")
-        return None
+        try:
+            # Exemple de format attendu : 'YYYY-MM-DD HH:MM:SS'
+            return datetime.strptime(date_string, "%d-%m-%Y %H:%M:%S")
+        except ValueError:
+            _logger.info(f"Format de date invalide : {date_string}")
+            return None
 
     def _partner_data_json(self, partner):
         base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url').rstrip('/')
@@ -126,7 +125,7 @@ class Main3CX(http.Controller):
             return self._bad_request()
         sanitized_number = self._sanitize_number(number)
         _logger.info('Numéro normalisé: %s' % sanitized_number)
-        partner = request.env['res.partner'].sudo().search([ 
+        partner = request.env['res.partner'].sudo().search([
             '|', '|', '|', 
             ('mobile_format', 'ilike', str(sanitized_number)),
             ('mobile_1_format', 'ilike', str(sanitized_number)),
@@ -173,12 +172,7 @@ class Main3CX(http.Controller):
 
     def _create_call_log(self, data, partner):
         date_string = data.get('date', '')
-        if not date_string:
-            _logger.warning("La date est manquante dans les données de l'appel.")
         parsed_date = self._parse_date(date_string)
-        if parsed_date is None:
-            _logger.warning(f"Erreur lors du parsing de la date: {date_string}. Utilisation de la date actuelle.")
-            parsed_date = datetime.now()  # Utilisation de la date actuelle si la conversion échoue
         request.env['res.call.log'].sudo().create({
             'name': data.get('subject', ''),
             'date': parsed_date,  # Assurez-vous que la date est bien au format datetime
