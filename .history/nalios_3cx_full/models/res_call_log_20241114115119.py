@@ -9,7 +9,7 @@ class CallLog(models.Model):
 
     name = fields.Char('Call System')
     partner_id = fields.Many2one('res.partner', 'Contact')
-    date = fields.Datetime('Date', default=fields.Datetime.now)
+    date = fields.Char('Date')
     ttype = fields.Char('Call Type')
     entitytype = fields.Char('Entity Type')
     agentname = fields.Char('Agent')
