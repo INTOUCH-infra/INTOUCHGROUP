@@ -176,7 +176,7 @@ class Main3CX(http.Controller):
     def _create_call_log(self, data, partner):
         request.env['res.call.log'].sudo().create({
             'name': data.get('subject', ''),
-            'date': parsed_date,
+            'date': data.get('date', ''),
             'ttype': data.get('type', ''),
             'entitytype': data.get('entitytype', ''),
             'agentname': data.get('agentname', ''),

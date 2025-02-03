@@ -163,20 +163,11 @@ class Main3CX(http.Controller):
             p.message_post(body=self._get_message_data(data), message_type='comment', subtype_xmlid='mail.mt_note')
             self._create_call_log(data, p)
         return self._success_with_data()
-       
-    def _parse_date(self, date_string):
-    """Parse and convert the date string to a valid datetime object."""
-    try:
-        
-        return datetime.strptime(date_string, "%d-%m-%Y %H:%M:%S")
-    except ValueError:
-        _logger.info(f"Invalid date format: {date_string}")
-        return None
 
     def _create_call_log(self, data, partner):
         request.env['res.call.log'].sudo().create({
             'name': data.get('subject', ''),
-            'date': parsed_date,
+            'date': data.get('date', ''),
             'ttype': data.get('type', ''),
             'entitytype': data.get('entitytype', ''),
             'agentname': data.get('agentname', ''),
