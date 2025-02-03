@@ -5,7 +5,6 @@ import json
 import re
 import logging
 import phonenumbers
-from datetime import datetime
 from markupsafe import Markup
 
 from odoo import http
@@ -15,27 +14,31 @@ _logger = logging.getLogger(__name__)
 
 
 class Main3CX(http.Controller):
-    
     def _is_3cx_authenticated(self):
-        """Vérifie l'en-tête Authorization pour le token 3CX."""
+        """Checking Authorization header for 3CX Token.
+        It's suffixed with :X in 3CX configuration."""
         try:
             header = request.httprequest.headers.get('Authorization', False)
             if not header:
                 return False
             header = header.replace('Basic ', '').strip()
-            decoded = base64.b64decode(header).decode("utf-8").replace(':X', '')
+            decoded = base64.b64decode(header)
+            decoded = decoded.decode("utf-8").replace(':X', '')
             stored_api_token = request.env['ir.config_parameter'].sudo().get_param('3cx.api.token')
-            return stored_api_token == decoded
+            if stored_api_token != decoded:
+                return False
+            return True
         except Exception as e:
-            _logger.error('Erreur lors de la récupération de l\'en-tête Authorization: %s', e)
+            _logger.info('Could not get Basic Authorization heade. View error below for more information :')
+            _logger.info(e)
             return False
 
     def _bad_request(self):
-        _logger.info('Requête incorrecte !')
+        _logger.info('Bad request !')
         return Response(json.dumps({'error': 'Bad Request'}), status=400)
 
     def _unauthorized(self):
-        _logger.info('Requête non autorisée !')
+        _logger.info('Unauthorized request !')
         return Response(json.dumps({'error': 'Unauthorized'}), status=401)
 
     def _success_with_data(self, data={}):
@@ -46,26 +49,30 @@ class Main3CX(http.Controller):
 
     def _sanitize_number(self, number):
         """
-        Normalise et formate le numéro de téléphone.
+        Parse and normalize phone numbers to ensure a consistent format.
+        
+        Arguments:
+        - number (str): The phone number to sanitize.
+        
+        Returns:
+        - str: The sanitized number in international format or national format if parsing fails.
         """
         if not number:
             return ""
         try:
+            # If number starts with '00', replace with '+' for parsing
             if number.startswith("00"):
                 number = "+" + number[2:]
+            
+            # Parse the number (with or without +) using a generic region code like 'ZZ' (unknown region)
             parsed_number = phonenumbers.parse(number, None)
-            return phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+            
+            # If successfully parsed, return in E.164 format
+            formatted_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+            return formatted_number
         except phonenumbers.NumberParseException:
+            # As a fallback, remove leading zeros to standardize national numbers without a country code
             return number.lstrip("0")
-
-    def _parse_date(self, date_string):
-        """Parse et convertit la chaîne de date en objet datetime."""
-        try:
-            # Exemple de format attendu : 'YYYY-MM-DD HH:MM:SS'
-            return datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
-        except ValueError:
-            _logger.info(f"Format de date invalide : {date_string}")
-            return None
 
     def _partner_data_json(self, partner):
         base_url = request.env['ir.config_parameter'].sudo().get_param('web.base.url').rstrip('/')
@@ -82,88 +89,74 @@ class Main3CX(http.Controller):
         }
 
     def _get_livechat_data(self, data):
-        msg = "Sujet: %s<br/>" % data.get('subject', '')
+        msg = "Subject: %s<br/>" % data.get('subject', '')
         msg += "Date: %s<br/>" % data.get('date', '')
-        msg += "Durée: %s<br/>" % data.get('duration', '')
-        msg += "Nom de l'agent: %s<br/>" % data.get('agentname', '')
-        msg += "Téléphone de l'agent: %s<br/>" % data.get('agent', '')        
+        msg += "Duration: %s<br/>" % data.get('duration', '')
+        msg += "Agent Name: %s<br/>" % data.get('agentname', '')
+        msg += "Agent Phone: %s<br/>" % data.get('agent', '')        
         msg += "Messages: <br/>%s" % data.get('messages', '').replace('\n', '<br/>')
         return Markup(msg)
 
     def _get_message_data(self, data):
-        msg = "Sujet: %s<br/>" % data.get('subject', '')
+        msg = "Subject: %s<br/>" % data.get('subject', '')
         msg += "Date: %s<br/>" % data.get('date')
-        msg += "Type d'appel: %s<br/>" % data.get('type', '')
-        msg += "Entité: %s<br/>" % data.get('entitytype', '')
-        msg += "Nom de l'agent: %s<br/>" % data.get('agentname', '')
-        msg += "Téléphone de l'agent: %s<br/>" % data.get('agent', '')
-        msg += "Détails: %s" % data.get(data.get('type', 'no').lower(), '')
+        msg += "Call Type: %s<br/>" % data.get('type', '')
+        msg += "Entity: %s<br/>" % data.get('entitytype', '')
+        msg += "Agent Name: %s<br/>" % data.get('agentname', '')
+        msg += "Agent Phone: %s<br/>" % data.get('agent', '')
+        msg += "Details: %s" % data.get(data.get('type', 'no').lower(), '')
         return Markup(msg)
 
     @http.route('/3cx/search/email/<string:email>', methods=["GET"], csrf=False, type="http", auth="public")
     def search_3cx_email(self, email):
-        """Recherche un partenaire Odoo avec l'email donné."""
+        """Search an Odoo partner with the given email from 3CX"""
         if not self._is_3cx_authenticated():
             return self._unauthorized()
-        _logger.info('Recherche Email 3CX avec l\'email %s' % email)
+        _logger.info('3CX Search Email called with email %s' % email)
         if not email:
             return self._bad_request()
-        partner = request.env['res.partner'].sudo().search([('email', '=', email)], limit=1)
-        if not partner:
+        if not (partner := request.env['res.partner'].sudo().search([('email', '=', email)], limit=1)):
             partner = request.env['res.partner'].sudo().create({
-                'name': 'Nouvel email: ' + email,
+                'name': 'New from email: ' + email,
                 'email': email,
             })
         return self._success_with_data(self._partner_data_json(partner))
 
     @http.route('/3cx/search/number/<string:number>/<string:ttype>', methods=["GET"], csrf=False, type="http", auth="public")
     def search_3cx_number(self, number, ttype):
-        """Recherche un partenaire Odoo avec le numéro donné."""
+        """Search an Odoo partner with the given number from 3CX.
+            The ttype is not used anymore, keeping for compatibility with 3CX Template Generator"""
         if not self._is_3cx_authenticated():
             return self._unauthorized()
         if not number:
             return self._bad_request()
         sanitized_number = self._sanitize_number(number)
-        _logger.info('Numéro normalisé: %s' % sanitized_number)
-        partner = request.env['res.partner'].sudo().search([
-            '|', '|', '|', 
-            ('mobile_format', 'ilike', str(sanitized_number)),
-            ('mobile_1_format', 'ilike', str(sanitized_number)),
-            ('phone_format', 'ilike', str(sanitized_number)),
-            ('phone_1_format', 'ilike', str(sanitized_number))
-        ], limit=1)
-        if not partner:
+        _logger.info('Got sanitized number: %s' % sanitized_number)
+        if not (partner := request.env['res.partner'].sudo().search(['|', '|', '|', ('mobile_format', 'ilike', str(sanitized_number)), ('mobile_1_format', 'ilike', str(sanitized_number)), ('phone_format', 'ilike', str(sanitized_number)), ('phone_1_format', 'ilike', str(sanitized_number))], limit=1)):
             partner = request.env['res.partner'].sudo().create({
-                'name': 'Nouveau contact à partir du numéro: ' + sanitized_number,
+                'name': 'New contact from number : ' + sanitized_number,
                 'phone': sanitized_number
             })
         return self._success_with_data(self._partner_data_json(partner))
 
     @http.route('/3cx/call/log', methods=["POST"], csrf=False, type="json", auth="public")
     def _3cx_log_call(self):
-        """Log d'appel reçu de 3CX après qu'un appel est terminé."""
+        """Call log received from 3CX when call is finished."""
         if not self._is_3cx_authenticated():
             return self._unauthorized()
         data = self._load_json_data()
-        _logger.info('Log d\'appel 3CX reçu avec les données: %s' % data)
+        _logger.info('3CX Call Log called with data %s' % data)
         if not data:
             return self._bad_request()
         number = data.get('phone', False)
         if not number:
             return self._bad_request()
-        sanitized_number = self._sanitize_number(number)
-        partner = request.env['res.partner'].sudo().search([
-            '|', '|', '|', 
-            ('mobile_format', 'ilike', str(sanitized_number)),
-            ('mobile_1_format', 'ilike', str(sanitized_number)),
-            ('phone_format', 'ilike', str(sanitized_number)),
-            ('phone_1_format', 'ilike', str(sanitized_number))
-        ], limit=1)
-        if not partner:
-            _logger.info('Aucun partenaire trouvé pour le numéro %s' % sanitized_number)
+        number = self._sanitize_number(number)
+        if not (partner := request.env['res.partner'].sudo().search(['|', '|', '|', ('mobile_format', 'ilike', str(number)), ('mobile_1_format', 'ilike', str(number)), ('phone_format', 'ilike', str(number)), ('phone_1_format', 'ilike', str(number))], limit=1)):
+            _logger.info('No partner found for number %s' % number)
             partner = request.env['res.partner'].sudo().create({
-                'name': 'Nouveau contact à partir du numéro: ' + sanitized_number,
-                'phone': sanitized_number
+                'name': 'New contact from number : ' + number,
+                'phone': number
             })
         for p in partner:
             p.message_post(body=self._get_message_data(data), message_type='comment', subtype_xmlid='mail.mt_note')
@@ -171,11 +164,9 @@ class Main3CX(http.Controller):
         return self._success_with_data()
 
     def _create_call_log(self, data, partner):
-        date_string = data.get('date', '')
-        parsed_date = self._parse_date(date_string)
         request.env['res.call.log'].sudo().create({
             'name': data.get('subject', ''),
-            'date': parsed_date,  # Assurez-vous que la date est bien au format datetime
+            'date': data.get('date', ''),
             'ttype': data.get('type', ''),
             'entitytype': data.get('entitytype', ''),
             'agentname': data.get('agentname', ''),
@@ -190,11 +181,23 @@ class Main3CX(http.Controller):
 
     @http.route('/3cx/chat/create', methods=["POST"], csrf=False, type="json", auth="public")
     def _3cx_create_chat(self):
-        """Création de chat reçue de 3CX lorsqu'un chat est marqué comme 'Traité'."""
+        """Chat log received from 3CX when a Chat is ticked as 'Dealt With'"""
         if not self._is_3cx_authenticated():
             return self._unauthorized()
         data = self._load_json_data()
-        _logger.info('Données de chat 3CX : %s' % data)
+        _logger.info('3CX Chat Create called with data %s' % data)
         if not data:
             return self._bad_request()
-        return self._success_with_data(self._get_livechat_data(data))
+        email = data.get('email', False)
+        if not email:
+            return self._bad_request()
+        if not (partner := request.env['res.partner'].sudo().search([('email', '=', email)], limit=1)):
+            partner = request.env['res.partner'].sudo().create({
+                'name': data.get('name', 'New from Livechat Email : %s' % email),
+                'email': email,
+                'mobile': data.get('number', ''),
+            })
+        livechat_body = self._get_livechat_data(data)
+        for p in partner:
+            p.message_post(body=livechat_body, message_type='comment', subtype_xmlid='mail.mt_note')
+        return self._success_with_data()
