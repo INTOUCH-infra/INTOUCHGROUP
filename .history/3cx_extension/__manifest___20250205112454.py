@@ -1,8 +1,8 @@
 {
     "name": "3CX Call Logs",
     "summary": "Capture et affiche les logs 3CX dans la fiche contact",
-    "author": "Babacar NIANG",
-    "website": "https://intouchgroup.net",
+    "author": "Ton Nom",
+    "website": "https://tonsite.com",
     "category": "CRM",
     "version": "1.0",
     "depends": ["base", "contacts"],

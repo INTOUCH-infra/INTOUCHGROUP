@@ -1,0 +1,15 @@
+<odoo>
+    <record id="view_call_log_tree" model="ir.ui.view">
+        <field name="name">call.log.tree</field>
+        <field name="model">call.log</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="date"/>
+                <field name="call_type"/>
+                <field name="agent_name"/>
+                <field name="agent_phone"/>
+                <field name="call_details"/>
+            </tree>
+        </field>
+    </record>
+</odoo>
