@@ -82,14 +82,14 @@ class Main3CX(http.Controller):
             'show_url': base_url + '/web?#view_type=form&id=%s&model=res.partner' % (partner.id,)
         }
 
-    # def _get_livechat_data(self, data):
-    #     msg = "Sujet: %s<br/>" % data.get('subject', '')
-    #     msg += "Date: %s<br/>" % data.get('date', '')
-    #     msg += "Durée: %s<br/>" % data.get('duration', '')
-    #     msg += "Nom de l'agent: %s<br/>" % data.get('agentname', '')
-    #     msg += "Téléphone de l'agent: %s<br/>" % data.get('agent', '')        
-    #     msg += "Messages: <br/>%s" % data.get('messages', '').replace('\n', '<br/>')
-    #     return Markup(msg)
+    def _get_livechat_data(self, data):
+        msg = "Sujet: %s<br/>" % data.get('subject', '')
+        msg += "Date: %s<br/>" % data.get('date', '')
+        msg += "Durée: %s<br/>" % data.get('duration', '')
+        msg += "Nom de l'agent: %s<br/>" % data.get('agentname', '')
+        msg += "Téléphone de l'agent: %s<br/>" % data.get('agent', '')        
+        msg += "Messages: <br/>%s" % data.get('messages', '').replace('\n', '<br/>')
+        return Markup(msg)
 
     # def _get_message_data(self, data):
     #     msg = "Sujet: %s<br/>" % data.get('subject', '')
