@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Vue de configuration 3CX existante -->
     <record id="3cx_form_view" model="ir.ui.view">
         <field name="name">3cx.form.view</field>
         <field name="model">config.3cx</field>
@@ -21,41 +21,6 @@
         </field>
     </record>
 
-    <!-- Nouvelle vue formulaire pour les Call Logs enrichis -->
-    <record id="res_call_log_form_view" model="ir.ui.view">
-        <field name="name">res.call.log.form.view</field>
-        <field name="model">res.call.log</field>
-        <field name="arch" type="xml">
-            <form string="3CX Call Log">
-                <sheet>
-                    <group>
-                        <field name="partner_id"/>
-                        <field name="name"/>
-                        <field name="date" widget="datetime" options="{'format': 'DD-MM-YYYY HH:mm'}"/>
-                        <field name="ttype"/>
-                        <field name="entitytype"/>
-                        <field name="agentname"/>
-                        <field name="agent"/>
-                        <field name="call_start"/>
-                        <field name="call_established"/>
-                        <field name="call_end"/>
-                        <field name="duration"/>
-                        <field name="details"/>
-                    </group>
-                    <group string="Informations Complémentaires" colspan="2">
-                        <field name="contact_source"/>
-                        <field name="contact_type"/>
-                        <field name="contact_reason"/>
-                        <field name="product"/>
-                        <field name="service"/>
-                        <field name="ticket_number"/>
-                    </group>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <!-- Vue liste existante pour les Call Logs -->
     <record id="res_call_log_list_view" model="ir.ui.view">
         <field name="name">res.call.log.list.view</field>
         <field name="model">res.call.log</field>
@@ -63,7 +28,7 @@
             <list>
                 <field name="partner_id"/>
                 <field name="name"/>
-                <field name="date" widget="datetime" options="{'format': 'DD-MM-YYYY HH:mm'}"/>
+                <field name="date"/>
                 <field name="ttype"/>
                 <field name="entitytype"/>
                 <field name="agentname"/>
@@ -77,17 +42,13 @@
         </field>
     </record>
 
-    <!-- Action pour ouvrir la vue liste (avec possibilité d'accéder au formulaire) -->
     <record id="action_call_logs" model="ir.actions.act_window">
         <field name="name">3CX Call Logs</field>
         <field name="res_model">res.call.log</field>
-        <!-- Utilisation de "list,form" pour correspondre à la vue définie -->
-        <field name="view_mode">list,form</field>
-        <field name="domain">[]</field>
-        <field name="context">{'order': 'date desc'}</field>
+        <field name="view_mode">list</field>
     </record>
+    
 
-    <!-- Action pour ouvrir la configuration 3CX -->
     <record id="action_open_3cx_configuration" model="ir.actions.act_window">
         <field name="name">3CX Configuration</field>
         <field name="res_model">config.3cx</field>
@@ -95,7 +56,6 @@
         <field name="target">new</field>
     </record>
 
-    <!-- Menu 3CX et sous-menus -->
     <menuitem id="menu_3cx_root"
         name="3CX"
         sequence="25"
