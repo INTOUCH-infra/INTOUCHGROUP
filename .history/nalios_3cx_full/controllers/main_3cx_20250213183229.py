@@ -176,11 +176,9 @@ def _convert_to_datetime(date_string):
         return self._success_with_data()
 
     def _create_call_log(self, data, partner):
-    call_date = self._convert_to_datetime(data.get('date', ''))
-    if call_date:
         request.env['res.call.log'].sudo().create({
             'name': data.get('subject', ''),
-            'date': call_date,  # Utilisation de la date convertie
+            'date': data.get('date', ''),
             'ttype': data.get('type', ''),
             'entitytype': data.get('entitytype', ''),
             'agentname': data.get('agentname', ''),
@@ -192,8 +190,6 @@ def _convert_to_datetime(date_string):
             'duration': data.get('duration', ''),
             'details': data.get(data.get('type', 'no').lower(), '')
         })
-    else:
-        _logger.error("Date format error: %s" % data.get('date', ''))
 
     @http.route('/3cx/chat/create', methods=["POST"], csrf=False, type="json", auth="public")
     def _3cx_create_chat(self):
