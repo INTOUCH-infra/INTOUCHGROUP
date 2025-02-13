@@ -9,8 +9,6 @@ from markupsafe import Markup
 
 from odoo import http
 from odoo.http import request, Response
-from datetime import datetime
-
 
 _logger = logging.getLogger(__name__)
 
@@ -165,37 +163,21 @@ class Main3CX(http.Controller):
             self._create_call_log(data, p)
         return self._success_with_data()
 
-        from datetime import datetime
-
-def _create_call_log(self, data, partner):
-    def format_date(date_str):
-        """Convert date string to Odoo-compatible format."""
-        try:
-            # Detect different possible formats from 3CX data
-            for fmt in ("%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S", "%d/%m/%Y %H:%M:%S"):
-                try:
-                    return datetime.strptime(date_str, fmt).strftime("%Y-%m-%d %H:%M:%S")
-                except ValueError:
-                    continue
-        except Exception as e:
-            _logger.info("Failed to parse date: %s, Error: %s", date_str, e)
-        return False  # Return False if parsing fails
-    
-    request.env['res.call.log'].sudo().create({
-        'name': data.get('subject', ''),
-        'date': format_date(data.get('date', '')),
-        'ttype': data.get('type', ''),
-        'entitytype': data.get('entitytype', ''),
-        'agentname': data.get('agentname', ''),
-        'agent': data.get('agent', ''),
-        'call_start': format_date(data.get('callstart', '')),
-        'call_established': format_date(data.get('callestablished', '')),
-        'call_end': format_date(data.get('callend', '')),
-        'partner_id': partner.id,
-        'duration': data.get('duration', ''),
-        'details': data.get(data.get('type', 'no').lower(), '')
-    })
-
+    def _create_call_log(self, data, partner):
+        request.env['res.call.log'].sudo().create({
+            'name': data.get('subject', ''),
+            'date': data.get('date', ''),
+            'ttype': data.get('type', ''),
+            'entitytype': data.get('entitytype', ''),
+            'agentname': data.get('agentname', ''),
+            'agent': data.get('agent', ''),
+            'call_start': data.get('callstart', ''),
+            'call_established': data.get('callestablished', ''),
+            'call_end': data.get('callend', ''),
+            'partner_id': partner.id,
+            'duration': data.get('duration', ''),
+            'details': data.get(data.get('type', 'no').lower(), '')
+        })
 
     @http.route('/3cx/chat/create', methods=["POST"], csrf=False, type="json", auth="public")
     def _3cx_create_chat(self):
