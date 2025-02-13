@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-	'name': "3CX intouch",
+	'name': "3CX CRM Template full integration",
 	'summary': """
 		Generates 3CX CRM Template and fully integrate it in Odoo:
         - Contact Search/Create
