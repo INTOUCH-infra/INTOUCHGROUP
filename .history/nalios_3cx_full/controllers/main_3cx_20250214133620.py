@@ -67,7 +67,7 @@ class Main3CX(http.Controller):
             date_str += ":00"
         
         # Formats de date acceptés
-        formats = ["%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%m/%d/%Y %H:%M"]
+        formats = ["%d/%m/%Y %H:%M:%S", "%m/%d/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%m/%d/%Y %H:%M"]
         for fmt in formats:
             try:
                 dt = datetime.strptime(date_str, fmt)

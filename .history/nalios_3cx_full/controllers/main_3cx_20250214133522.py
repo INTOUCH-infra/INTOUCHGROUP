@@ -67,11 +67,11 @@ class Main3CX(http.Controller):
             date_str += ":00"
         
         # Formats de date acceptés
-        formats = ["%d/%m/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%m/%d/%Y %H:%M"]
+        formats = ["%d/%m/%Y %H:%M:%S", "%m/%d/%Y %H:%M:%S", "%d/%m/%Y %H:%M", "%m/%d/%Y %H:%M"]
         for fmt in formats:
             try:
                 dt = datetime.strptime(date_str, fmt)
-                return dt.strftime("%m-%d-%Y %H:%M:%S")  # Format Odoo
+                return dt.strftime("%Y-%m-%d %H:%M:%S")  # Format Odoo
             except ValueError:
                 continue
         
@@ -85,7 +85,7 @@ class Main3CX(http.Controller):
 
         for field in ['callstart', 'callestablished', 'callend']:
             if not formatted_dates[field]:
-                formatted_dates[field] = formatted_dates['date']
+                
         
         if None in formatted_dates.values():
             _logger.error("Date(s) non valides pour le log d'appel: %s", formatted_dates)
