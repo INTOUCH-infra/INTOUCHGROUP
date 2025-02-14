@@ -12,7 +12,7 @@ class CallLog(models.Model):
     partner_id = fields.Many2one('res.partner', 'Contact')
     
     # Champ date avec conversion automatique en format M/D/Y HH:MM:SS
-    date = fields.Datetime('Date', default=fields.Datetime.now, required=True)
+    date = fields.Datetime('Date', default=fields.Datetime.now)
     
     ttype = fields.Char('Call Type')
     entitytype = fields.Char('Entity Type')
