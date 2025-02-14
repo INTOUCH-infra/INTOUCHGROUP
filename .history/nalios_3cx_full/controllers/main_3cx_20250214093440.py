@@ -9,7 +9,6 @@ from markupsafe import Markup
 
 from odoo import http
 from odoo.http import request, Response
-from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
