@@ -89,17 +89,21 @@ class CallLog(models.Model):
 
     ticket_number = fields.Char(string="Ticket Number")
 
-    @@api.model
+    @api.model
     def create(self, vals):
-        """ Remplace les chaînes vides par None (NULL) avant de créer l'enregistrement. """
-        for field in ['date', 'call_start', 'call_established', 'call_end']:
-            if field in vals and not vals[field]:  # Si le champ est une chaîne vide ou False
-                vals[field] = None
+        """ Convertit les dates en M/D/Y HH:MM:SS avant la création """
+        date_fields = ['date', 'call_start', 'call_established', 'call_end']
+        for field_name in date_fields:
+            if field_name in vals and vals[field_name]:
+                vals[field_name] = self._convert_date(vals[field_name])
         return super(CallLog, self).create(vals)
 
-    def write(self, vals):
-        """ Remplace les chaînes vides par None (NULL) avant de mettre à jour l'enregistrement. """
-        for field in ['date', 'call_start', 'call_established', 'call_end']:
-            if field in vals and not vals[field]:
-                vals[field] = None
-        return super(CallLog, self).write(vals)
+    def _convert_date(self, date_str):
+        """ Convertit une date en format M/D/Y HH:MM:SS """
+        try:
+            if isinstance(date_str, str):
+                dt = datetime.strptime(date_str, "%d/%m/%Y %H:%M:%S")
+                return dt.strftime("%m/%d/%Y %H:%M:%S")
+            return date_str
+        except ValueError:
+            return None
