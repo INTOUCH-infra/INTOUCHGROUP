@@ -16,7 +16,7 @@ class CallLog(models.Model):
     agent = fields.Char('Agent ext.')
     call_start = fields.Datetime('Call Start')
     call_established = fields.Datetime('Call Established')
-    call_end = fields.Datetime('Call End')
+    call_end = fields.Char('Call End')
     duration = fields.Char('Duration')
     details = fields.Char('Details')
     contact_source = fields.Selection([
