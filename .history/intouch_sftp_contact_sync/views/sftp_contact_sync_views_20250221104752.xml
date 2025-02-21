@@ -1,0 +1,54 @@
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_sftp_contact_sync_tree" model="ir.ui.view">
+            <field name="name">sftp.contact.sync.tree</field>
+            <field name="model">sftp.contact.sync</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="sftp_host"/>
+                    <field name="sftp_port"/>
+                    <field name="last_sync"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_sftp_contact_sync_form" model="ir.ui.view">
+            <field name="name">sftp.contact.sync.form</field>
+            <field name="model">sftp.contact.sync</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="sftp_host"/>
+                            <field name="sftp_port"/>
+                            <field name="sftp_username"/>
+                            <field name="sftp_password"/>
+                            <field name="sftp_directory"/>
+                            <field name="last_sync"/>
+                            <field name="active"/>
+                        </group>
+                        <footer>
+                            <button string="Synchroniser maintenant" type="object" name="process_contacts" class="btn-primary"/>
+                        </footer>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_sftp_contact_sync" model="ir.actions.act_window">
+            <field name="name">Configurations SFTP</field>
+            <field name="res_model">sftp.contact.sync</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Menu Items -->
+        <menuitem id="menu_sftp_contact_sync_root" name="SFTP Contact Sync"/>
+        <menuitem id="menu_sftp_contact_sync" name="Configurations" parent="menu_sftp_contact_sync_root" action="action_sftp_contact_sync"/>
+    </data>
+</odoo>
